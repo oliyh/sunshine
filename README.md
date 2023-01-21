@@ -5,6 +5,13 @@ A year of solar power
 The following noted will be turned into a presentation
 in the near future
 
+## Motivation
+
+Documentary that told us we are killing Earth - Planet Earth II?
+Reduce our impact on Earth
+Show the map that shows how much of earth we need to cover in panels to power the planet
+1kW per square meter? Average?
+
 ## 2022
 
 Generated: 5144
