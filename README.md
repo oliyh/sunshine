@@ -76,3 +76,4 @@ worst days (0.4 units), surprising (v hot, 3kW limit))
 - Make hay when the sun shines!
 - Reduce quiescent usage to a minimum
   - Turning off lights, NAS, standby mode
+- More efficient tumble dryer
