@@ -62,6 +62,7 @@ Discuss how to choose each
 - 3.6kWh inverter
 - Micro generation certification 
 - Pigeon proofing!
+- Lifetime - panel degradation, inverter replacement 
 - Cost (vat), added to house value, prices have now gone up
 
 Discuss best days (30+ units), 
