@@ -2,23 +2,26 @@
 
 A year of solar power
 
-The following noted will be turned into a presentation
-in the near future
+![Staring at the sun](https://www.praguereporter.com/wp-content/uploads/2007/04/sunshine-movie-review.jpg)
+
+The following notes will be turned into a presentation
+and blog post in the near future.
 
 ## Motivation
 
-Documentary that told us we are killing Earth - Planet Earth II?
-Reduce our impact on Earth
-Show the map that shows how much of earth we need to cover in panels to power the planet
-1kW per square meter? Average?
+- Documentary that told us we are killing Earth - Planet Earth II?
+- Reduce our impact on Earth
+- Show the map that shows how much of earth we need to cover in panels to power the planet
+  ![Planetary solar](https://waitbutwhy.com/wp-content/uploads/2014/05/18mm1fwo6xlc1jpg.jpg)
+- 1kW per square meter? Average?
 
 ## 2022
 
-Generated: 5144
-Consumed: 3785
-Imported: 1490
-Exported: 1792
-Battery: 1446
+- Generated: 5144
+- Consumed: 3785
+- Imported: 1490
+- Exported: 1792
+- Battery: 1446
 
 ### Prices
 
@@ -27,9 +30,11 @@ Compare actual with:
 - Using the Dec rates
 
 Combine this with generated / consumed etc each month
+
 Graph it out
 
 |Month|Import|Export|
+|---|-----|----|
 |Jan|20.35|20|
 |Feb|20.35|18|
 |Mar|20.35|19.6|
@@ -56,6 +61,7 @@ Mention EV?
 Work this out for the UK mix
 
 ### Requirements
+
 - Roof area, aspect
 - Planning permission
 - Export agreement
@@ -76,10 +82,14 @@ Discuss best days (30+ units),
 worst days (0.4 units), surprising (v hot, 3kW limit))
 
 ### Installation
+
 - One day, 3 people
 - All in attic, cable to distribution box and export meter
 
 ### Impact on life
+
+![What do you see?](https://abload.de/img/img_388632jrz.jpg)
+
 - Make hay when the sun shines!
 - Reduce quiescent usage to a minimum
   - Turning off lights, NAS, standby mode
