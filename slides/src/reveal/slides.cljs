@@ -5,7 +5,11 @@
    {:data-background-image "https://camo.githubusercontent.com/d6d6cfa4e9bcfb8f2230916364bc3ee85414d74161894acdd3475513f1ef660e/68747470733a2f2f7777772e7072616775657265706f727465722e636f6d2f77702d636f6e74656e742f75706c6f6164732f323030372f30342f73756e7368696e652d6d6f7669652d7265766965772e6a7067"
     :data-background-opacity "0.7"}
    [:h1 {:style "color: black;"} "sunshine"]
-   [:h5 {:style "color: black;"} "a year of solar power"]])
+   [:h5 {:style "color: black;"} "a year of solar power"]
+   [:audio
+    {:controls true :autoplay true}
+    [:source {:src "audio/sunshine-theme.mp3"
+              :type "audio/mpeg"}]]])
 
 (def intro
   [:section
