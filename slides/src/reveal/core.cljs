@@ -5,7 +5,6 @@
             [hiccups.runtime]
             [reveal.slides :as slides]))
 
-
 ;; When changing comments, you manually need to refresh your browser
 (def options (clj->js {:hash true
                        :controls true
