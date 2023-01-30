@@ -121,7 +121,8 @@
    ;; import, export, generation, consumption, battery saved us
    ;; maybe a chart for each?
    ;; work out how many gridless days there were
-   [:h4 "Generation"]
+   [:h4 "5144 kWh generated"]
+   [:p "Where did it go?"]
    [:div {:style "width: 800px;"}
     [:canvas#generation-chart]]
    [:aside.notes
@@ -129,6 +130,16 @@
      [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
      [:li "We had X days without using the grid at all - sunny all day and battery all night"]
      [:li "On the darkest days we only generate about 0.5kWh, enough to boil the kettle a few times"]]]])
+
+(def consumption
+  [:section
+   [:h4 "3785 kWh consumed"]
+   [:p "Where did it come from?"]
+   [:div {:style "width: 800px;"}
+    [:canvas#consumption-chart]]
+   [:aside.notes
+    [:ul
+     [:li]]]])
 
 ;; todo download all stats, looks like limited to 10 days at a time
 ;; https://server.luxpowertek.com/WManage/web/analyze/data/export/1332005062/2022-01-01?endDateText=2022-07-01
@@ -154,4 +165,5 @@
    sizing
    installation
    generation
-   generation-2])
+   generation-2
+   consumption])

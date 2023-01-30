@@ -1,23 +1,34 @@
 (ns reveal.charts)
 
-(defn draw-gen2-chart []
-  (when-let [old-chart (js/Chart.getChart "generation-chart")]
+(defn- draw-chart [id opts]
+  (when-let [old-chart (js/Chart.getChart id)]
     (.destroy old-chart))
 
-  (let [data [{:year 2010 :count 10}
-              {:year 2011 :count 30}
-              {:year 2012 :count 15}
-              {:year 2013 :count 14}
-              {:year 2014 :count 22}
-              {:year 2015 :count 30}
-              {:year 2016 :count 28}]
-        chart-opts (clj->js {:type "bar"
-                             :data {:labels (map :year data)
-                                    :datasets [{:label "Generated energy"
-                                                :data (map :count data)}]}})
-        canvas (js/document.getElementById "generation-chart")]
+  (let [chart-opts (clj->js opts)
+        canvas (js/document.getElementById id)]
     (js/Chart. canvas chart-opts)))
+
+  ;;- Generated: 5144
+  ;;- Consumed: 3785
+  ;;- Imported: 1490
+  ;;- Exported: 1792
+  ;;- Battery: 1446 vs 389!!!
+
+(defn- generation-chart []
+  (draw-chart "generation-chart"
+              {:type "pie"
+               :data {:labels ["Direct use" "Battery" "Export"]
+                      :datasets [{:label "Generated energy"
+                                  :data [1906 1446 1792]}]}}))
+
+(defn- consumption-chart []
+  (draw-chart "consumption-chart"
+              {:type "pie"
+               :data {:labels ["Solar" "Battery" "Grid"]
+                      :datasets [{:label "Consumed energy"
+                                  :data [1906 389 1490]}]}}))
 
 (defn init []
   (js/console.log "initing charts")
-  (draw-gen2-chart))
+  (generation-chart)
+  (consumption-chart))
