@@ -1,4 +1,5 @@
-(ns reveal.charts)
+(ns reveal.charts
+  (:require [reveal.macros :refer-macros [defdata]]))
 
 (defn- draw-chart [id opts]
   (when-let [old-chart (js/Chart.getChart id)]
@@ -19,6 +20,7 @@
 (def battery-blue "rgb(34, 155, 230)")
 (def export-purple "rgb(230, 34, 214)")
 (def import-red "rgb(230, 34, 34)")
+(def inefficiency-grey "rgb(150, 150, 150)")
 
 (defn- headlines-chart []
   (draw-chart "headlines-chart"
@@ -51,24 +53,51 @@
                                                     battery-blue
                                                     import-red]}]}}))
 
+(defdata stats-2022 "stats-2022.edn")
+
+(defn- annual-generation-chart []
+  (let [day-count 365]
+    (draw-chart "annual-generation-chart"
+                {:type "bar"
+                 :options {:scales {:x {:stacked true}
+                                    :y {:stacked true}}}
+                 :data {:labels (take day-count (map :date stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                        :datasets [{:label "Consumed directly"
+                                    :data (take day-count (map :inverter-to-house stats-2022))
+                                    :backgroundColor consumption-orange}
+                                   {:label "Battery"
+                                    :data (take day-count (map :to-battery stats-2022))
+                                    :backgroundColor battery-blue}
+                                   {:label "Export"
+                                    :data (take day-count (map :to-grid stats-2022))
+                                    :backgroundColor export-purple}
+                                   {:label "Inefficiency"
+                                    :data (take day-count (map #(+ (:inverter-lost %)
+                                                                   (:battery-lost %))
+                                                               stats-2022))
+                                    :backgroundColor inefficiency-grey}]}})))
+
+(defn- annual-consumption-chart []
+  (let [day-count 365]
+    (draw-chart "annual-consumption-chart"
+                {:type "bar"
+                 :options {:scales {:x {:stacked true}
+                                    :y {:stacked true}}}
+                 :data {:labels (take day-count (map :date stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                        :datasets [{:label "Direct use"
+                                    :data (take day-count (map :inverter-to-house stats-2022))
+                                    :backgroundColor solar-green}
+                                   {:label "Battery"
+                                    :data (take day-count (map :from-battery stats-2022))
+                                    :backgroundColor battery-blue}
+                                   {:label "Grid"
+                                    :data (take day-count (map :from-grid stats-2022))
+                                    :backgroundColor import-red}]}})))
+
 (defn init []
   (js/console.log "initing charts")
   (headlines-chart)
   (generation-chart)
-  (consumption-chart))
-
-#_    {
-      "eRecDay" 6, ;; solar production, kwh
-      "eToUserDay" 113,  ;; consumption from grid, 0.1 kwh
-      "ePv3Day" 0,
-      "ePv1Day" 60, ;; solar production from string 1, 0.1 kwh
-      "ePv2Day" 0,
-      "eEpsDay" 0,
-      "eInvDay" 53, ;; consumption from inverter
-      "eChgDay" 31, ;; battery charging, 0.1kwh
-      "day" 1,      ;; day of month
-      "eDisChgDay" 24, ;; battery discharging, 0.1 kwh
-      "eToGridDay" 1 ;; export to grid, 0.1 kwh
-    },
-
-;; consumed = eToUserDay [grid import] + eDisChgDay [from battery] + (eInvDay - eChgDay) [whatever the inverter output was, minus what it used to charge the battery]
+  (consumption-chart)
+  (annual-generation-chart)
+  (annual-consumption-chart))

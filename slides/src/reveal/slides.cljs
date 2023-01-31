@@ -128,10 +128,25 @@
      [:li "A further 10% came from the batteries"];; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
      [:li "Only 40% came from the grid"]]]])
 
-(def year-in-numbers
+(def annual-generation
   [:section
-   [:h2 "The year in numbers"]
-   [:ul]
+   [:h2 "Annual generation"]
+   [:div {:style "width: 800px;"}
+    [:canvas#annual-generation-chart]]
+
+   [:aside.notes
+    [:ul
+     ;; todo work out impact of battery
+     [:li "The battery"]
+     ;; todo work out our footprint on the grid as a % of what we actually used
+     ;; work out number of gridless days
+     ]]])
+
+(def annual-consumption
+  [:section
+   [:h2 "Annual consumption"]
+   [:div {:style "width: 800px;"}
+    [:canvas#annual-consumption-chart]]
 
    [:aside.notes
     [:ul
@@ -179,4 +194,5 @@
    headlines
    generation
    consumption
-   year-in-numbers])
+   annual-generation
+   annual-consumption])
