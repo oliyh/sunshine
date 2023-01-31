@@ -95,41 +95,26 @@
      [:li "Installation was quick and clean"]
      [:li "Pigeon proofing was added later and took one person a few hours"]]]])
 
-(def generation
+(def headlines
   [:section
-   [:h2 "Generation"]
-   [:ul
-    [:li "5144kWh generated"]
-    [:li "3785kWh consumed domestically"]
-    [:li "1792kWh exported to the grid"]
-    [:li "1490kWh imported when it wasn't sunny enough"]
-    [:li "1446kWh import saved by battery"]]
-   ;; todo - can represent as pie chart maybe?
-   ;; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
+   [:div {:style "width: 800px;"}
+    [:canvas#headlines-chart]]
    [:aside.notes
     [:ul
      [:li "We generated more than we used!"]
-     [:li "We exported enough to run an average house for 2/3rds of a year"]
-     ;; todo work out impact of battery
-     [:li "The battery"]
-     ;; todo work out our footprint on the grid as a % of what we actually used
-     ]]])
+     [:li "This is the total amounts over a year, though."]
+     [:li "On sunny days we exported, and on dark days we imported, so let's look at a breakdown"]]]])
 
-(def generation-2
+(def generation
   [:section
-   ;; todo - chart for the whole year
-   ;; import, export, generation, consumption, battery saved us
-   ;; maybe a chart for each?
-   ;; work out how many gridless days there were
    [:h4 "5144 kWh generated"]
    [:p "Where did it go?"]
    [:div {:style "width: 800px;"}
     [:canvas#generation-chart]]
    [:aside.notes
-    [:ul
-     [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
-     [:li "We had X days without using the grid at all - sunny all day and battery all night"]
-     [:li "On the darkest days we only generate about 0.5kWh, enough to boil the kettle a few times"]]]])
+    [:li "Nearly a third went straight into the plug sockets in our house"]
+    [:li "Another third went into the battery for later consumption"]
+    [:li "The final third we exported to the grid - nearly 1800 kWh, enough to run an average home for 8 months"]]])
 
 (def consumption
   [:section
@@ -139,10 +124,37 @@
     [:canvas#consumption-chart]]
    [:aside.notes
     [:ul
-     [:li]]]])
+     [:li "Half of all our electricity came directly from the sun"]
+     [:li "A further 10% came from the batteries"];; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
+     [:li "Only 40% came from the grid"]]]])
 
-;; todo download all stats, looks like limited to 10 days at a time
-;; https://server.luxpowertek.com/WManage/web/analyze/data/export/1332005062/2022-01-01?endDateText=2022-07-01
+(def year-in-numbers
+  [:section
+   [:h2 "The year in numbers"]
+   [:ul]
+
+   [:aside.notes
+    [:ul
+     ;; todo work out impact of battery
+     [:li "The battery"]
+     ;; todo work out our footprint on the grid as a % of what we actually used
+     ;; work out number of gridless days
+     ]]])
+
+#_[:ul
+   [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
+   [:li "We had X days without using the grid at all - sunny all day and battery all night"]
+   [:li "On the darkest days we only generate about 0.5kWh, enough to boil the kettle a few times"]]
+
+#_[:ul
+ [:li "5144kWh generated"]
+ [:li "3785kWh consumed domestically"]
+ [:li "1792kWh exported to the grid"]
+ [:li "1490kWh imported when it wasn't sunny enough"]
+ [:li "1446kWh import saved by battery"]]
+
+;; todo
+;; efficiency - between 70-80% overall?
 
 (def skeleton
   [:section
@@ -164,6 +176,7 @@
    equipment
    sizing
    installation
+   headlines
    generation
-   generation-2
-   consumption])
+   consumption
+   year-in-numbers])
