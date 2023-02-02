@@ -97,7 +97,7 @@
 
 (def headlines
   [:section
-   [:div {:style "width: 800px;"}
+   [:div {:style "width: 100%; margin: 0 auto;"}
     [:canvas#headlines-chart]]
    [:aside.notes
     [:ul
@@ -109,29 +109,17 @@
   [:section
    [:h4 "5144 kWh generated"]
    [:p "Where did it go?"]
-   [:div {:style "width: 800px;"}
+   [:div {:style "width: 50vw; margin: 0 auto;"}
     [:canvas#generation-chart]]
    [:aside.notes
     [:li "Nearly a third went straight into the plug sockets in our house"]
     [:li "Another third went into the battery for later consumption"]
     [:li "The final third we exported to the grid - nearly 1800 kWh, enough to run an average home for 8 months"]]])
 
-(def consumption
-  [:section
-   [:h4 "3785 kWh consumed"]
-   [:p "Where did it come from?"]
-   [:div {:style "width: 800px;"}
-    [:canvas#consumption-chart]]
-   [:aside.notes
-    [:ul
-     [:li "Half of all our electricity came directly from the sun"]
-     [:li "A further 10% came from the batteries"];; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
-     [:li "Only 40% came from the grid"]]]])
-
 (def annual-generation
   [:section
    [:h2 "Annual generation"]
-   [:div {:style "width: 800px;"}
+   [:div {:style "width: 100%; margin: 0 auto;"}
     [:canvas#annual-generation-chart]]
 
    [:aside.notes
@@ -142,10 +130,22 @@
      ;; work out number of gridless days
      ]]])
 
+(def consumption
+  [:section
+   [:h4 "3785 kWh consumed"]
+   [:p "Where did it come from?"]
+   [:div {:style "width: 50vw; margin: 0 auto;"}
+    [:canvas#consumption-chart]]
+   [:aside.notes
+    [:ul
+     [:li "Half of all our electricity came directly from the sun"]
+     [:li "A further 10% came from the batteries"];; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
+     [:li "Only 40% came from the grid"]]]])
+
 (def annual-consumption
   [:section
    [:h2 "Annual consumption"]
-   [:div {:style "width: 800px;"}
+   [:div {:style "width: 100%; margin: 0 auto;"}
     [:canvas#annual-consumption-chart]]
 
    [:aside.notes
@@ -193,6 +193,6 @@
    installation
    headlines
    generation
-   consumption
    annual-generation
+   consumption
    annual-consumption])
