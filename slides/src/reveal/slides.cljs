@@ -1,4 +1,5 @@
-(ns reveal.slides)
+(ns reveal.slides
+  (:require [reveal.charts :refer [stats-2022]]))
 
 (def title-page
   [:section
@@ -95,9 +96,20 @@
      [:li "Installation was quick and clean"]
      [:li "Pigeon proofing was added later and took one person a few hours"]]]])
 
+(def energy-section
+  [:section {:data-autoslide 6000
+             :data-background-image "/img/section-divider.jpg"
+             :data-background-opacity "0.7"}
+   [:h1.r-fit-text "Energy"]
+   [:audio
+    {:controls false :data-autoplay true}
+    [:source {:src "audio/slide-transition.mp3"
+              :type "audio/mpeg"}]]])
+
 (def headlines
   [:section
-   [:div {:style "width: 100%; margin: 0 auto;"}
+   [:h2 "Energy"]
+   [:div.r-stretch
     [:canvas#headlines-chart]]
    [:aside.notes
     [:ul
@@ -107,14 +119,14 @@
 
 (def generation
   [:section
-   [:h4 "5144 kWh generated"]
-   [:p "Where did it go?"]
-   [:div {:style "width: 50vw; margin: 0 auto;"}
-    [:canvas#generation-chart]]
+   [:h2 "5144 kWh generated"]
+   [:div.r-stretch
+    [:canvas#generation-chart {:style "margin: 0 auto;"}]]
    [:aside.notes
-    [:li "Nearly a third went straight into the plug sockets in our house"]
+    [:li "20% went straight into the plug sockets in our house"]
     [:li "Another third went into the battery for later consumption"]
-    [:li "The final third we exported to the grid - nearly 1800 kWh, enough to run an average home for 8 months"]]])
+    [:li "Another third we exported to the grid - nearly 1800 kWh, enough to run an average home for 8 months"]
+    [:li "About 20% was lost to inefficiency in the inverter and the battery charge/discharge cycle"]]])
 
 (def annual-generation
   [:section
@@ -130,26 +142,32 @@
      ;; work out number of gridless days
      ]]])
 
+(defn- stats-percent [num denom]
+  (str (int (* (/ (apply + (map num stats-2022))
+                  (apply + (map denom stats-2022)))
+               100))
+       "%"))
+
 (def consumption
   [:section
    [:h4 "3785 kWh consumed"]
-   [:p "Where did it come from?"]
-   [:div {:style "width: 50vw; margin: 0 auto;"}
-    [:canvas#consumption-chart]]
+   [:div.r-stretch
+    [:canvas#consumption-chart {:style "margin: 0 auto;"}]]
    [:aside.notes
     [:ul
-     [:li "Half of all our electricity came directly from the sun"]
-     [:li "A further 10% came from the batteries"];; todo - does it all add up? looks like nearly 1000 lost in inefficiency?
-     [:li "Only 40% came from the grid"]]]])
+     [:li (stats-percent :inverter-to-house :consumed)" of all our electricity came directly from the sun"]
+     [:li (stats-percent :from-battery :consumed)" came from the batteries"]
+     [:li "Only " (stats-percent :from-grid :consumed) " came from the grid"]]]])
 
 (def annual-consumption
   [:section
    [:h2 "Annual consumption"]
-   [:div {:style "width: 100%; margin: 0 auto;"}
+   [:div.r-stretch
     [:canvas#annual-consumption-chart]]
 
    [:aside.notes
     [:ul
+     [:li "We had " (count (filter #(> 0.5 (:from-grid %)) stats-2022)) " days off-grid"]
      ;; todo work out impact of battery
      [:li "The battery"]
      ;; todo work out our footprint on the grid as a % of what we actually used
@@ -171,6 +189,13 @@
 ;; todo
 ;; efficiency - between 70-80% overall?
 
+;; todo
+;; money - average import, export prices
+;; value of 60% reduction in grid, value of export
+;; value that the batteries saved us, vs their cost
+;; payoff of investment
+;; graph of bills over the year, vs what they would have been without panels
+
 (def skeleton
   [:section
    [:h2 ""]
@@ -191,6 +216,8 @@
    equipment
    sizing
    installation
+
+   energy-section
    headlines
    generation
    annual-generation

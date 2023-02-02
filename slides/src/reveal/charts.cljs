@@ -1,6 +1,8 @@
 (ns reveal.charts
   (:require [reveal.macros :refer-macros [defdata]]))
 
+(set! (.. js/Chart -defaults -color) "white")
+
 (defn- draw-chart [id opts]
   (when-let [old-chart (js/Chart.getChart id)]
     (.destroy old-chart))
@@ -22,15 +24,21 @@
 (def import-red "rgb(230, 34, 34)")
 (def inefficiency-grey "rgb(150, 150, 150)")
 
+(def legend {:legend {:labels {:padding 20
+                               :font {:size 20}}
+                      :position "bottom"}})
+
 (defdata stats-2022 "stats-2022.edn")
 
 (defn- headlines-chart []
   (draw-chart "headlines-chart"
               {:type "bar"
-               :data {:labels ["Consumed"
-                               "Generated"]
+               :options {:plugins {:legend {:display false}}
+                         :indexAxis "y"
+                         :scales {:x {:title {:display true
+                                              :text "kWh"}}}}
+               :data {:labels ["Consumed" "Generated"]
                       :datasets [{:label "Total energy"
-                                  :indexAxis "y"
                                   :data [(apply + (map :consumed stats-2022)) ;;3785
                                          (apply + (map :to-inverter stats-2022))]
                                   :backgroundColor [consumption-orange
@@ -39,6 +47,7 @@
 (defn- generation-chart []
   (draw-chart "generation-chart"
               {:type "pie"
+               :options {:plugins legend}
                :data {:labels ["Consumed directly" "Battery" "Export" "Inefficiency"]
                       :datasets [{:label "Generated energy"
                                   :data [(apply + (map :inverter-to-house stats-2022)) ;; 1906
@@ -55,6 +64,7 @@
 (defn- consumption-chart []
   (draw-chart "consumption-chart"
               {:type "pie"
+               :options {:plugins legend}
                :data {:labels ["Solar" "Battery" "Grid"]
                       :datasets [{:label "Consumed energy"
                                   :data [(apply + (map :inverter-to-house stats-2022)) ;; 1906
@@ -63,15 +73,28 @@
                                          ]
                                   :backgroundColor [solar-green
                                                     battery-blue
-                                                    import-red]}]}}))
+                                                    import-red]}]}})
+  #_(let [chart (js/Chart.getChart "consumption-chart")]
+    (.set! (.. chart -overrides -pie -plugins -legend -position) "right")
+    ;; Chart.overrides[type].plugins.legend
+    (.update chart)))
+
+(def consumption-scales
+  {:x {:type "time"
+       :stacked true
+       :title {:text "Date"}}
+   :y {:stacked true
+       :min 0
+       :title {:text "kWh"
+               :display true}}})
 
 (defn- annual-generation-chart []
   (let [day-count 365]
     (draw-chart "annual-generation-chart"
                 {:type "bar"
-                 :options {:scales {:x {:stacked true}
-                                    :y {:stacked true}}}
-                 :data {:labels (take day-count (map :date stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                 :options {:plugins legend
+                           :scales consumption-scales}
+                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
                         :datasets [{:label "Consumed directly"
                                     :data (take day-count (map :inverter-to-house stats-2022))
                                     :backgroundColor consumption-orange}
@@ -91,9 +114,9 @@
   (let [day-count 365]
     (draw-chart "annual-consumption-chart"
                 {:type "bar"
-                 :options {:scales {:x {:stacked true}
-                                    :y {:stacked true}}}
-                 :data {:labels (take day-count (map :date stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                 :options {:plugins legend
+                           :scales consumption-scales}
+                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
                         :datasets [{:label "Solar"
                                     :data (take day-count (map :inverter-to-house stats-2022))
                                     :backgroundColor solar-green}
