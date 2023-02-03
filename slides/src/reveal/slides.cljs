@@ -1,5 +1,5 @@
 (ns reveal.slides
-  (:require [reveal.charts :refer [stats-2022]]))
+  (:require [reveal.stats :as stats :refer [stats-2022]]))
 
 (def title-page
   [:section
@@ -20,7 +20,7 @@
 (def motivation-1
   [:section
    [:h2 "Why?"]
-   [:img {:src "https://www.wwf.org.uk/sites/default/files/styles/full_image/public/2019-04/david-attenborough_0.jpg?itok=Eh9xJnmM"}]
+   [:img {:src "img/david-attenborough.jpg"}]
    [:aside.notes
     [:ul
      [:li "David Attenborough has been observing the natural world since 1952"]
@@ -119,14 +119,18 @@
 
 (def generation
   [:section
-   [:h2 "5144 kWh generated"]
-   [:div.r-stretch
-    [:canvas#generation-chart {:style "margin: 0 auto;"}]]
+   [:h2 (stats/total :to-inverter) " kWh generated"]
+   [:div.r-stretch {:style "display: flex; justify-content: center;"}
+    [:canvas#generation-chart]]
    [:aside.notes
-    [:li "20% went straight into the plug sockets in our house"]
-    [:li "Another third went into the battery for later consumption"]
-    [:li "Another third we exported to the grid - nearly 1800 kWh, enough to run an average home for 8 months"]
-    [:li "About 20% was lost to inefficiency in the inverter and the battery charge/discharge cycle"]]])
+    [:li (stats/percent :inverter-to-house :to-inverter) " went straight into the plug sockets in our house"]
+    [:li (stats/percent :to-battery :to-inverter) " went into the battery for later consumption"]
+    [:li (stats/percent :to-grid :to-inverter) " was exported to the grid - "
+     (stats/total :to-grid) " kWh, enough to run an average home for " (js/Math.round (/ (/ (stats/total :to-grid) 7.5) 30)) " months"]
+    [:li (stats/format-percent (+ (stats/total :inverter-lost)
+                                  (stats/total :battery-lost))
+                               (stats/total :to-inverter))
+     " was lost to inefficiency in the inverter and the battery charge/discharge cycle"]]])
 
 (def annual-generation
   [:section
@@ -142,22 +146,16 @@
      ;; work out number of gridless days
      ]]])
 
-(defn- stats-percent [num denom]
-  (str (int (* (/ (apply + (map num stats-2022))
-                  (apply + (map denom stats-2022)))
-               100))
-       "%"))
-
 (def consumption
   [:section
-   [:h4 "3785 kWh consumed"]
-   [:div.r-stretch
-    [:canvas#consumption-chart {:style "margin: 0 auto;"}]]
+   [:h2 (stats/total :consumed) " kWh consumed"]
+   [:div.r-stretch {:style "display: flex; justify-content: center;"}
+    [:canvas#consumption-chart]]
    [:aside.notes
     [:ul
-     [:li (stats-percent :inverter-to-house :consumed)" of all our electricity came directly from the sun"]
-     [:li (stats-percent :from-battery :consumed)" came from the batteries"]
-     [:li "Only " (stats-percent :from-grid :consumed) " came from the grid"]]]])
+     [:li (stats/percent :inverter-to-house :consumed)" of all our electricity came directly from the sun"]
+     [:li (stats/percent :from-battery :consumed)" came from the batteries"]
+     [:li "Only " (stats/percent :from-grid :consumed) " came from the grid"]]]])
 
 (def annual-consumption
   [:section
@@ -167,7 +165,7 @@
 
    [:aside.notes
     [:ul
-     [:li "We had " (count (filter #(> 0.5 (:from-grid %)) stats-2022)) " days off-grid"]
+     [:li "We had " (count (filter #(> 0.5 %) (stats/series :from-grid))) " days off-grid"]
      ;; todo work out impact of battery
      [:li "The battery"]
      ;; todo work out our footprint on the grid as a % of what we actually used

@@ -1,5 +1,5 @@
 (ns reveal.charts
-  (:require [reveal.macros :refer-macros [defdata]]))
+  (:require [reveal.stats :refer [stats-2022]]))
 
 (set! (.. js/Chart -defaults -color) "white")
 
@@ -28,8 +28,6 @@
                                :font {:size 20}}
                       :position "bottom"}})
 
-(defdata stats-2022 "stats-2022.edn")
-
 (defn- headlines-chart []
   (draw-chart "headlines-chart"
               {:type "bar"
@@ -47,7 +45,9 @@
 (defn- generation-chart []
   (draw-chart "generation-chart"
               {:type "pie"
-               :options {:plugins legend}
+               :options {:responsive true
+                         :resizeDelay 10
+                         :plugins legend}
                :data {:labels ["Consumed directly" "Battery" "Export" "Inefficiency"]
                       :datasets [{:label "Generated energy"
                                   :data [(apply + (map :inverter-to-house stats-2022)) ;; 1906
@@ -73,11 +73,7 @@
                                          ]
                                   :backgroundColor [solar-green
                                                     battery-blue
-                                                    import-red]}]}})
-  #_(let [chart (js/Chart.getChart "consumption-chart")]
-    (.set! (.. chart -overrides -pie -plugins -legend -position) "right")
-    ;; Chart.overrides[type].plugins.legend
-    (.update chart)))
+                                                    import-red]}]}}))
 
 (def consumption-scales
   {:x {:type "time"
@@ -94,7 +90,7 @@
                 {:type "bar"
                  :options {:plugins legend
                            :scales consumption-scales}
-                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Consumed directly"
                                     :data (take day-count (map :inverter-to-house stats-2022))
                                     :backgroundColor consumption-orange}
@@ -116,7 +112,7 @@
                 {:type "bar"
                  :options {:plugins legend
                            :scales consumption-scales}
-                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022));;["Jan" "Feb" "Mar" "Apr" "May" "Jun"]
+                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Solar"
                                     :data (take day-count (map :inverter-to-house stats-2022))
                                     :backgroundColor solar-green}
