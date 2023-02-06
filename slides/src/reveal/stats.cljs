@@ -24,6 +24,8 @@
   0.182 ;; 182 grams co2 per kwh
   )
 
+(def installation-cost 9000)
+
 (def import-prices
   {"01" 20.35
    "02" 20.35

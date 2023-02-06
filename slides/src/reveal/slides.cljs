@@ -206,22 +206,30 @@
     [:li "Import"
      [:ul
       [:li "Electricity prices averaged "
-       (js/Math.round (/ (stats/total-cost :import :from-grid)
-                         (stats/total :from-grid)))
-       "p/kWh"]
+       [:span {:style "color: orange"}
+        (js/Math.round (/ (stats/total-cost :import :from-grid)
+                          (stats/total :from-grid)))
+        "p/kWh"]]
       (let [grid-avoided (- (stats/total-cost :import :consumed)
                             (stats/total-cost :import :from-grid))]
-        [:li "We saved £" (js/Math.round (/ grid-avoided 100)) " from our grid consumption"])
-      [:li "With prices now at 35p/kWh this would be £" (js/Math.round
-                                                         (* (/ 35 100)
-                                                            (- (stats/total :consumed)
-                                                               (stats/total :from-grid))))]]]
+        [:li "We saved "
+         [:span {:style "color: lightgreen;"}
+          "£" (js/Math.round (/ grid-avoided 100))]
+         " from our grid consumption"])
+      [:li "With prices now at 35p/kWh this would be "
+       [:span {:style "color: lightgreen;"}
+        "£" (js/Math.round
+             (* (/ 35 100)
+                (- (stats/total :consumed)
+                   (stats/total :from-grid))))]]]]
     [:li "Export"
      [:ul
       [:li "Export rate varies per hour; averaged " (js/Math.round (/ (stats/total-cost :export :to-grid)
                                                                       (stats/total :to-grid)))
        "p/kWh"]
-      [:li "We were paid £" (js/Math.round (/ (stats/total-cost :export :to-grid) 100)) " for export"]]]]])
+      [:li "We were paid "
+       [:span {:style "color: lightgreen;"}
+        "£" (js/Math.round (/ (stats/total-cost :export :to-grid) 100))] " for export"]]]]])
 
 (def daily-money
   [:section
@@ -234,6 +242,21 @@
    [:h2 "Monthly bills"]
    [:div.r-stretch
     [:canvas#monthly-bills-chart]]])
+
+(def payback
+  [:section
+   [:h2 "Payback"]
+   (let [grid-avoided (- (stats/total-cost :import :consumed)
+                         (stats/total-cost :import :from-grid))
+         export (stats/total-cost :export :to-grid)
+         total-value (/ (+ grid-avoided export) 100)]
+     [:ul
+      [:li "The installation generated £" (js/Math.round total-value) " of value"]
+      [:li "The installation cost was £" stats/installation-cost]]
+     ;; todo draw a graph of the payoff, using FV = PV(1 + r)^n to future value solar generation
+     ;; remember to use the higher import cost
+     ;; and maybe add £3k or something after 10 years to show the new inverter?
+     )])
 
 (def behavioural-impact
   [:section
@@ -252,12 +275,14 @@
  [:li "1446kWh import saved by battery"]]
 
 ;; todo
+;; styling - use stylesheet / classes to pick out key numbers on slides
+;; use the same colours as the charts
+
 ;; efficiency - between 70-80% overall?
 
 ;; todo
 ;; value that the batteries saved us, vs their cost
 ;; payoff of investment
-;; graph of bills over the year, vs what they would have been without panels
 
 (def skeleton
   [:section
@@ -291,4 +316,5 @@
    money-impact
    daily-money
    monthly-bills
+   payback
    behavioural-impact])
