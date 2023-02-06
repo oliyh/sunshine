@@ -16,3 +16,10 @@
 
 (defn series [k]
   (map k stats-2022))
+
+(def avg-uk-annual-consumption
+  (* 7.5 365))
+
+(def uk-grid-carbon-intensity
+  0.182 ;; 182 grams co2 per kwh
+  )

@@ -112,8 +112,10 @@
     [:canvas#headlines-chart]]
    [:aside.notes
     [:ul
-     [:li "We generated more than we used!"]
-     [:li "This is the total amounts over a year, though."]
+     [:li "We generated enough to power " (.toFixed (/ (stats/total :to-inverter) stats/avg-uk-annual-consumption) 1) " average UK houses"]
+     [:li "We generated " (stats/format-percent (- (stats/total :to-inverter) (stats/total :consumed))
+                                                (stats/total :consumed))
+      " more than we used!"]
      [:li "On sunny days we exported, and on dark days we imported, so let's look at a breakdown"]]]])
 
 (def generation
@@ -136,14 +138,10 @@
    [:h2 "Annual generation"]
    [:div {:style "width: 100%; margin: 0 auto;"}
     [:canvas#annual-generation-chart]]
-
    [:aside.notes
     [:ul
-     ;; todo work out impact of battery
-     [:li "The battery"]
-     ;; todo work out our footprint on the grid as a % of what we actually used
-     ;; work out number of gridless days
-     ]]])
+     [:li "We had " (count (filter #(> 0.5 %) (stats/series :to-grid))) " days when we exported power to the grid"]
+     [:li "On our best day we exported " (apply max (stats/series :to-grid)) " kWh"]]]])
 
 (def consumption
   [:section
@@ -161,15 +159,44 @@
    [:h2 "Annual consumption"]
    [:div.r-stretch
     [:canvas#annual-consumption-chart]]
-
    [:aside.notes
     [:ul
-     [:li "We had " (count (filter #(> 0.5 %) (stats/series :from-grid))) " days off-grid"]
-     ;; todo work out impact of battery
-     [:li "The battery"]
-     ;; todo work out our footprint on the grid as a % of what we actually used
-     ;; work out number of gridless days
-     ]]])
+     [:li "Our consumption varied between " (first (drop 5 (sort (filter pos? (stats/series :consumed))))) " kWh and " (apply max (stats/series :consumed))]
+     [:li "We had " (count (filter #(> 0.5 %) (stats/series :from-grid))) " days off-grid"]]]])
+
+(def impact-section
+  [:section {:data-autoslide 6000
+             :data-background-image "/img/section-divider.jpg"
+             :data-background-opacity "0.7"}
+   [:h1.r-fit-text "Impact"]
+   [:audio
+    {:controls false :data-autoplay true}
+    [:source {:src "audio/slide-transition.mp3"
+              :type "audio/mpeg"}]]])
+
+(def environmental-impact
+  (let [grid-avoided (+ (stats/total :inverter-to-house)
+                        (stats/total :from-battery)
+                        (stats/total :to-grid))
+        carbon-avoided (js/Math.round (* grid-avoided stats/uk-grid-carbon-intensity))
+        carbon-avoided-tonne (/ carbon-avoided 1000)]
+    [:section
+     [:h2 "Environment"]
+     [:p {:style "color: lightgreen;"}
+      grid-avoided " kWh / " carbon-avoided " kg of CO₂ avoided*"]
+
+     [:p "The equivalent of..."]
+     [:ul
+      [:li "Driving a petrol car " (* carbon-avoided-tonne 7500) "km"]
+      [:li "Flying from London to Cairo"]
+      [:li (js/Math.round (/ carbon-avoided 36)) "kg of beef"]]
+
+     [:p
+      [:small "* UK grid carbon intensity was " (* 1000 stats/uk-grid-carbon-intensity) "g CO₂/kWh in 2022"]]
+     [:aside.notes
+      [:ul
+       [:li "What this puts into context for me is how energy intensive flying and beef are"]
+       [:li "2022 was the UK's second lowest carbon intensity score"]]]]))
 
 #_[:ul
    [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
@@ -219,4 +246,7 @@
    generation
    annual-generation
    consumption
-   annual-consumption])
+   annual-consumption
+
+   impact-section
+   environmental-impact])

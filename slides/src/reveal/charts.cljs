@@ -1,5 +1,6 @@
 (ns reveal.charts
-  (:require [reveal.stats :refer [stats-2022]]))
+  (:require [reveal.stats :refer [stats-2022]]
+            [reveal.stats :as stats]))
 
 (def solar-green "rgb(50, 168, 82)")
 (def consumption-orange "rgb(230, 151, 34)")
@@ -10,6 +11,7 @@
 
 (set! (.. js/Chart -defaults -color) "white")
 (set! (.. js/Chart -defaults -font -size) 20)
+(.register js/Chart js/ChartDataLabels)
 
 (defn- draw-chart [id opts]
   (when-let [old-chart (js/Chart.getChart id)]
@@ -19,21 +21,36 @@
         canvas (js/document.getElementById id)]
     (js/Chart. canvas chart-opts)))
 
-(def legend {:legend {:labels {:padding 20}
-                      :position "bottom"}})
+(def legend {:labels {:padding 20}
+             :position "bottom"})
+
+(def percent-datalabels
+  {:borderColor "white"
+   :borderWidth 2
+   :borderRadius 25
+   :anchor "end"
+   :padding 12
+   :backgroundColor (fn [context]
+                      (.. context -dataset -backgroundColor))
+   :formatter (fn [value context]
+                (let [total (apply +  (.. context -dataset -data))]
+                  (stats/format-percent value total)))})
 
 (defn- headlines-chart []
   (draw-chart "headlines-chart"
               {:type "bar"
-               :options {:plugins {:legend {:display false}}
+               :options {:plugins {:legend {:display false}
+                                   :datalabels {:display false}}
                          :indexAxis "y"
                          :scales {:x {:title {:display true
                                               :text "kWh"}}}}
-               :data {:labels ["Consumed" "Generated"]
+               :data {:labels ["Average UK consumption" "Our consumption" "Generated"]
                       :datasets [{:label "Total energy"
-                                  :data [(apply + (map :consumed stats-2022)) ;;3785
+                                  :data [stats/avg-uk-annual-consumption
+                                         (apply + (map :consumed stats-2022)) ;;3785
                                          (apply + (map :to-inverter stats-2022))]
-                                  :backgroundColor [consumption-orange
+                                  :backgroundColor [inefficiency-grey
+                                                    consumption-orange
                                                     solar-green]}]}}))
 
 (defn- generation-chart []
@@ -41,7 +58,8 @@
               {:type "pie"
                :options {:responsive true
                          :resizeDelay 10
-                         :plugins legend}
+                         :plugins {:legend legend
+                                   :datalabels percent-datalabels}}
                :data {:labels ["Consumed directly" "Battery" "Export" "Inefficiency"]
                       :datasets [{:label "Generated energy"
                                   :data [(apply + (map :inverter-to-house stats-2022)) ;; 1906
@@ -58,13 +76,13 @@
 (defn- consumption-chart []
   (draw-chart "consumption-chart"
               {:type "pie"
-               :options {:plugins legend}
+               :options {:plugins {:legend legend
+                                   :datalabels percent-datalabels}}
                :data {:labels ["Solar" "Battery" "Grid"]
                       :datasets [{:label "Consumed energy"
-                                  :data [(apply + (map :inverter-to-house stats-2022)) ;; 1906
-                                         (apply + (map :from-battery stats-2022)) ;; 389
-                                         (apply + (map :from-grid stats-2022)) ;; 1490
-                                         ]
+                                  :data [(apply + (map :inverter-to-house stats-2022))
+                                         (apply + (map :from-battery stats-2022))
+                                         (apply + (map :from-grid stats-2022))]
                                   :backgroundColor [solar-green
                                                     battery-blue
                                                     import-red]}]}}))
@@ -82,7 +100,8 @@
   (let [day-count 365]
     (draw-chart "annual-generation-chart"
                 {:type "bar"
-                 :options {:plugins legend
+                 :options {:plugins {:legend legend
+                                     :datalabels {:display false}}
                            :scales consumption-scales}
                  :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Consumed directly"
@@ -104,7 +123,8 @@
   (let [day-count 365]
     (draw-chart "annual-consumption-chart"
                 {:type "bar"
-                 :options {:plugins legend
+                 :options {:plugins {:legend legend
+                                     :datalabels {:display false}}
                            :scales consumption-scales}
                  :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Solar"
