@@ -96,9 +96,9 @@
        :title {:text "kWh"
                :display true}}})
 
-(defn- annual-generation-chart []
+(defn- daily-generation-chart []
   (let [day-count 365]
-    (draw-chart "annual-generation-chart"
+    (draw-chart "daily-generation-chart"
                 {:type "bar"
                  :options {:plugins {:legend legend
                                      :datalabels {:display false}}
@@ -119,9 +119,9 @@
                                                                stats-2022))
                                     :backgroundColor inefficiency-grey}]}})))
 
-(defn- annual-consumption-chart []
+(defn- daily-consumption-chart []
   (let [day-count 365]
-    (draw-chart "annual-consumption-chart"
+    (draw-chart "daily-consumption-chart"
                 {:type "bar"
                  :options {:plugins {:legend legend
                                      :datalabels {:display false}}
@@ -137,9 +137,98 @@
                                     :data (take day-count (map :from-grid stats-2022))
                                     :backgroundColor import-red}]}})))
 
+(defn- daily-money-chart []
+  (let [day-count 365]
+    (draw-chart "daily-money-chart"
+                {:type "bar"
+                 :options {:plugins {:legend legend
+                                     :datalabels {:display false}}
+                           :scales {:x {:type "time"
+                                        :stacked true
+                                        :title {:text "Date"}}
+                                    :y {:stacked true
+                                        :title {:text "£"
+                                                :display true}}}}
+                 :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
+                        :datasets
+                        (let [pnl (take day-count
+                                        (map (fn [stat]
+                                               (let [import-price (/ (stats/unit-price :import stat) 100)
+                                                     export-price (/ (stats/unit-price :import stat) 100)]
+                                                 (- (* export-price (:to-grid stat))
+                                                    (* import-price (:from-grid stat)))))
+                                             stats-2022))]
+                          [{:label "Export"
+                            :order 1
+                            :data (take day-count
+                                        (map (fn [stat]
+                                               (let [unit-price (/ (stats/unit-price :export stat) 100)]
+                                                 (* unit-price (:to-grid stat))))
+                                             stats-2022))
+                            :backgroundColor export-purple}
+                           {:label "Import"
+                            :order 1
+                            :data (take day-count
+                                        (map (fn [stat]
+                                               (let [unit-price (/ (stats/unit-price :import stat) 100)]
+                                                 (* -1 unit-price (:from-grid stat))))
+                                             stats-2022))
+                            :backgroundColor import-red}
+
+                           #_{:label "Money saved"
+                            :order 1
+                            :data (take day-count
+                                        (map (fn [stat]
+                                               (let [unit-price (/ (stats/unit-price :import stat) 100)]
+                                                 (* unit-price (:from-grid stat))))
+                                             stats-2022))
+                            :backgroundColor export-purple}
+                           #_{:label "Without panels"
+                              :order 2
+                              :data (take day-count
+                                          (map (fn [stat]
+                                                 (let [import-price (/ (stats/unit-price :import stat) 100)]
+                                                   (* -1 import-price (:consumed stat))))
+                                               stats-2022))
+                              :backgroundColor consumption-orange}])}})))
+
+(defn monthly-bills-chart []
+  (draw-chart "monthly-bills-chart"
+              {:type "line"
+               :options {:plugins {:legend legend
+                                   :datalabels {:display false}}
+                         :scales {:x {:type "time"
+                                      :title {:text "Date"}}
+                                  :y {:title {:text "£"
+                                              :display true}}}}
+               :data
+               (let [month-groups (->> stats-2022
+                                       (group-by #(.getMonth (js/Date. (:date %))))
+                                       (sort-by key)
+                                       (map val))]
+                 {:labels (map #(js/Date. (:date (first %))) month-groups)
+                  :datasets [{:label "With solar"
+                              :fill true
+                              :data (map (fn [stats]
+                                           (let [import-price (/ (stats/unit-price :import (first stats)) 100)
+                                                 export-price (/ (stats/unit-price :export (first stats)) 100)]
+                                             (- (* import-price (apply + (map :from-grid stats)))
+                                                (* export-price (apply + (map :to-grid stats))))))
+                                         month-groups)
+                              :backgroundColor solar-green}
+                             {:label "Without solar"
+                              :fill true
+                              :data (map (fn [stats]
+                                           (let [unit-price (/ (stats/unit-price :import (first stats)) 100)]
+                                             (* unit-price (apply + (map :consumed stats)))))
+                                         month-groups)
+                              :backgroundColor consumption-orange}]})}))
+
 (defn init []
   (headlines-chart)
   (generation-chart)
   (consumption-chart)
-  (annual-generation-chart)
-  (annual-consumption-chart))
+  (daily-generation-chart)
+  (daily-consumption-chart)
+  (daily-money-chart)
+  (monthly-bills-chart))

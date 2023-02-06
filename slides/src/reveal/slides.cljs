@@ -133,15 +133,16 @@
                                (stats/total :to-inverter))
      " was lost to inefficiency in the inverter and the battery charge/discharge cycle"]]])
 
-(def annual-generation
+(def daily-generation
   [:section
-   [:h2 "Annual generation"]
+   [:h2 "Daily generation"]
    [:div {:style "width: 100%; margin: 0 auto;"}
-    [:canvas#annual-generation-chart]]
+    [:canvas#daily-generation-chart]]
    [:aside.notes
     [:ul
      [:li "We had " (count (filter #(> 0.5 %) (stats/series :to-grid))) " days when we exported power to the grid"]
-     [:li "On our best day we exported " (apply max (stats/series :to-grid)) " kWh"]]]])
+     [:li "On our best day we exported " (apply max (stats/series :to-grid)) " kWh"]
+     [:li "On the worst days we only generate about " (first (drop 5 (sort (filter pos? (stats/series :to-inverter))))) " kWh"]]]])
 
 (def consumption
   [:section
@@ -154,11 +155,11 @@
      [:li (stats/percent :from-battery :consumed)" came from the batteries"]
      [:li "Only " (stats/percent :from-grid :consumed) " came from the grid"]]]])
 
-(def annual-consumption
+(def daily-consumption
   [:section
-   [:h2 "Annual consumption"]
+   [:h2 "Daily consumption"]
    [:div.r-stretch
-    [:canvas#annual-consumption-chart]]
+    [:canvas#daily-consumption-chart]]
    [:aside.notes
     [:ul
      [:li "Our consumption varied between " (first (drop 5 (sort (filter pos? (stats/series :consumed))))) " kWh and " (apply max (stats/series :consumed))]
@@ -198,6 +199,46 @@
        [:li "What this puts into context for me is how energy intensive flying and beef are"]
        [:li "2022 was the UK's second lowest carbon intensity score"]]]]))
 
+(def money-impact
+  [:section
+   [:h2 "Money"]
+   [:ul
+    [:li "Import"
+     [:ul
+      [:li "Electricity prices averaged "
+       (js/Math.round (/ (stats/total-cost :import :from-grid)
+                         (stats/total :from-grid)))
+       "p/kWh"]
+      (let [grid-avoided (- (stats/total-cost :import :consumed)
+                            (stats/total-cost :import :from-grid))]
+        [:li "We saved £" (js/Math.round (/ grid-avoided 100)) " from our grid consumption"])
+      [:li "With prices now at 35p/kWh this would be £" (js/Math.round
+                                                         (* (/ 35 100)
+                                                            (- (stats/total :consumed)
+                                                               (stats/total :from-grid))))]]]
+    [:li "Export"
+     [:ul
+      [:li "Export rate varies per hour; averaged " (js/Math.round (/ (stats/total-cost :export :to-grid)
+                                                                      (stats/total :to-grid)))
+       "p/kWh"]
+      [:li "We were paid £" (js/Math.round (/ (stats/total-cost :export :to-grid) 100)) " for export"]]]]])
+
+(def daily-money
+  [:section
+   [:h2 "Daily profit 'n' loss"]
+   [:div.r-stretch
+    [:canvas#daily-money-chart]]])
+
+(def monthly-bills
+  [:section
+   [:h2 "Monthly bills"]
+   [:div.r-stretch
+    [:canvas#monthly-bills-chart]]])
+
+(def behavioural-impact
+  [:section
+   [:h2 "Behaviour"]])
+
 #_[:ul
    [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
    [:li "We had X days without using the grid at all - sunny all day and battery all night"]
@@ -214,8 +255,6 @@
 ;; efficiency - between 70-80% overall?
 
 ;; todo
-;; money - average import, export prices
-;; value of 60% reduction in grid, value of export
 ;; value that the batteries saved us, vs their cost
 ;; payoff of investment
 ;; graph of bills over the year, vs what they would have been without panels
@@ -230,7 +269,6 @@
      [:li]]]])
 
 (defn all
-  "Add here all slides you want to see in your presentation."
   []
   [title-page
    intro
@@ -244,9 +282,13 @@
    energy-section
    headlines
    generation
-   annual-generation
+   daily-generation
    consumption
-   annual-consumption
+   daily-consumption
 
    impact-section
-   environmental-impact])
+   environmental-impact
+   money-impact
+   daily-money
+   monthly-bills
+   behavioural-impact])
