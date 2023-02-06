@@ -1,7 +1,15 @@
 (ns reveal.charts
   (:require [reveal.stats :refer [stats-2022]]))
 
+(def solar-green "rgb(50, 168, 82)")
+(def consumption-orange "rgb(230, 151, 34)")
+(def battery-blue "rgb(34, 155, 230)")
+(def export-purple "rgb(230, 34, 214)")
+(def import-red "rgb(230, 34, 34)")
+(def inefficiency-grey "rgb(150, 150, 150)")
+
 (set! (.. js/Chart -defaults -color) "white")
+(set! (.. js/Chart -defaults -font -size) 20)
 
 (defn- draw-chart [id opts]
   (when-let [old-chart (js/Chart.getChart id)]
@@ -11,21 +19,7 @@
         canvas (js/document.getElementById id)]
     (js/Chart. canvas chart-opts)))
 
-  ;;- Generated: 5144
-  ;;- Consumed: 3785
-  ;;- Imported: 1490
-  ;;- Exported: 1792
-  ;;- Battery: 1446 vs 389!!!
-
-(def solar-green "rgb(50, 168, 82)")
-(def consumption-orange "rgb(230, 151, 34)")
-(def battery-blue "rgb(34, 155, 230)")
-(def export-purple "rgb(230, 34, 214)")
-(def import-red "rgb(230, 34, 34)")
-(def inefficiency-grey "rgb(150, 150, 150)")
-
-(def legend {:legend {:labels {:padding 20
-                               :font {:size 20}}
+(def legend {:legend {:labels {:padding 20}
                       :position "bottom"}})
 
 (defn- headlines-chart []
@@ -124,7 +118,6 @@
                                     :backgroundColor import-red}]}})))
 
 (defn init []
-  (js/console.log "initing charts")
   (headlines-chart)
   (generation-chart)
   (consumption-chart)

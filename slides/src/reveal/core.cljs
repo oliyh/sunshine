@@ -32,18 +32,12 @@
   (set! (.. (gdom/getElement "slides") -innerHTML) (convert))
   (let [state (and (.isReady js/Reveal) (.getState js/Reveal))]
     (-> (.initialize js/Reveal options)
-        ;; prevent figwheel sharing the same session id / name with the speaker notes view
-        ;; todo: it doesn't actually need the figwheel reload, if the updates get pushed from
-        ;; the main presentation - is there a way to disable?
-        (.then #(when (.isSpeakerNotes js/Reveal)
-                  (js/console.log "Setting new figwheel session for speaker view")
-                  (.removeItem js/sessionStorage "figwheel.repl:::figwheel.repl/session-id" #_"speaker-view")
-                  (.removeItem js/sessionStorage "figwheel.repl:::figwheel.repl/session-name" #_"speaker-view")))
         (.then #(when state (.setState js/Reveal state)))
-        ;; todo work out if this does anything
-        ;;(.then #(.sync js/Reveal))
-        ;; post a message to the speaker notes to get it to pick up the updates
-        #_(.then #(when-not (.isSpeakerNotes js/Reveal)
+        (.then #(if (.isSpeakerNotes js/Reveal)
+                  ;; disable figwheel connection for speaker notes
+                  (set! (.-connect js/figwheel.repl) (constantly "Disabled for speaker notes"))
+
+                  ;; push updated speaker notes into the speaker notes window, if open
                   (when-let [window (js/window.open "", "reveal.js - Notes")]
                     (.postMessage window (js/JSON.stringify (clj->js {:namespace "reveal-notes"
                                                                       :type "state"
