@@ -205,7 +205,8 @@
               {:type "line"
                :options {:plugins {:legend legend
                                    :datalabels {:display false}}
-                         :scales {:x {:title {:text "Year"}}
+                         :scales {:x {:title {:text "Year"
+                                              :display true}}
                                   :y {:title {:text "£"
                                               :display true}}}}
                :data

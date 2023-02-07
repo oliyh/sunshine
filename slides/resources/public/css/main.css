@@ -1,3 +1,27 @@
 audio {
     opacity: 0.5;
 }
+
+:root {
+    --r-main-color: white;
+    --r-heading-color: white;
+    --r-background-color: #333;
+}
+
+.frame {
+  margin: auto;
+  background: #eee;
+  box-sizing: border-box;
+  padding: 30px;
+  border-style: solid;
+  border-width: 15px;
+  border-top-color: hsl(0, 0%, 30%);
+  border-right-color: hsl(0, 0%, 10%);
+  border-bottom-color: hsl(0, 0%, 30%);
+  border-left-color: hsl(0, 0%, 10%);
+  box-shadow: 2px 2px 4px rgba(0,0,0,.6);
+}
+
+.reveal small {
+    font-size: small;
+}

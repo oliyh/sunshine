@@ -15,12 +15,17 @@
 
 (def intro
   [:section
-   [:p "A year ago my home became a power plant"]])
+   [:h2 "My home the power plant"]
+   [:img.r-stretch.frame {:src "img/house.jpg"}]
+   [:aside.notes
+    [:ul
+     [:li "I've learned a lot and been asked for advice"]
+     [:li "Here are all the calculations and quantified reasoning"]]]])
 
 (def motivation-1
   [:section
    [:h2 "Why?"]
-   [:img {:src "img/david-attenborough.jpg"}]
+   [:img.r-stretch.frame {:src "img/david-attenborough.jpg"}]
    [:aside.notes
     [:ul
      [:li "David Attenborough has been observing the natural world since 1952"]
@@ -29,8 +34,9 @@
 
 (def motivation-2
   [:section
-   [:img {:src "img/global-surface-area.jpg"}]
-   [:p [:small "Credit: Tim Urban"]]
+   [:h2 "Why?"]
+   [:img.r-stretch.frame {:src "img/global-surface-area.jpg"}]
+   [:div [:small "Credit: Tim Urban"]]
    [:aside.notes
     [:ul
      [:li "The sun provides 1kW of power to every 1m² on earth"]
@@ -40,40 +46,75 @@
 (def planning
   [:section
    [:h2 "Planning"]
-   [:ul
-    [:li "South-facing roof"]
-    [:li "Planning permission"]
-    [:li "Quotes"]]
-   ;; todo photo of roof with panels
+   [:div (style {:margin-top "2em"
+                 :display "flex"
+                 :justify-content "space-evenly"
+                 :gap "20px"})
+    [:div
+     [:div (style {:font-size "4em"}) "🌤"]
+     "Sunny roof"]
+    [:div
+     [:div (style {:font-size "4em"}) "✍🏽"]
+     "Planning permission"]
+    [:div
+     [:div (style {:font-size "4em"}) "💷"]
+     "Quotes"]]
    [:aside.notes
     [:ul
+     [:li "A south-oriented roof is obviously best"]
      [:li "If you have an east/west oriented roof it can still work but you'll need panels on both aspects"]
-     [:li "Solar is 'permitted development' meaning you don't need permission except for special cases, like conservation areas"]
+     [:li "Solar is a 'permitted development' meaning you don't need permission except for special cases, like conservation areas"]
      [:li "As always, getting 3 quotes is a sensible idea"]]]])
 
 (def equipment
   [:section
    [:h2 "Equipment"]
-   [:ul
-    [:li "Panels"]
-    [:li "Inverter"]
-    [:li "Batteries"]
-    [:li "Pigeon proofing!"]]
-   ;; todo photos and/or diagram
+   [:div (style {:margin-top "2em"
+                 :display "flex"
+                 :justify-content "space-evenly"
+                 :gap "20px"})
+    [:div
+     [:div [:img.frame {:src "img/panels.jpg"}]]
+     "Solar panels & optimisers"]
+    [:div
+     [:div [:img.frame {:src "img/inverter.jpg"}]]
+     "Inverter & batteries"]
+    [:div
+     [:div [:img.frame {:src "img/pigeon-proofing.jpg"}]]
+     "Pigeon proofing"]]
    [:aside.notes
     [:ul
-     [:li "Modern panels can typically produce about 400W each"]
+     [:li "Modern panels typically produce about 400W each"]
      [:li "The inverter converts your solar power to domestic voltage and frequency"]
      [:li "Batteries increase your utilisation of your solar power by storing for later what you don't need now"]]]])
 
 (def sizing
   [:section
-   [:h2 "Decisions, decisions..."]
-   [:ul
-    [:li "A typical UK home uses 7.5kWh of electricity per day"]
-    [:li "A domestic export rate capped at 3.6kW"]
-    [:li "Sweet spot between 3.5kW (9 panels) and 5.5kW (14 panels)"]
-    [:li "Battery size should be commensurate with generation capacity and domestic usage"]]
+   [:h2 "Decisions"]
+   [:div (style {:display "flex"
+                 :justify-content "space-evenly"
+                 :flex-wrap "wrap"
+                 :gap "1em"})
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/consumption-orange})
+      "7.5kWh"]
+     "Average UK daily electricity use"]
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/export-purple})
+      "3.6kW"]
+     "Domestic export power cap"]
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/solar-green})
+      "400W"]
+     "Solar panel power output"]
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/battery-blue})
+      "£500"]
+     "Cost per 1kWh battery"]]
    [:aside.notes
     [:ul
      [:li "With two young children we average at least 10kWh a day"]
@@ -87,6 +128,7 @@
    [:ul
     [:li "One day"]
     [:li "Two on the roof and one electrician"]
+    [:li "Scaffolding"]
     [:li "Mounting points slide under roof tiles and fix to rafters"]
     [:li "Inverter and batteries in the attic"]
     [:li "Export meter and cutout switches added to distribution board"]]
@@ -186,7 +228,7 @@
         carbon-avoided-tonne (/ carbon-avoided 1000)]
     [:section
      [:h2 "Environment"]
-     [:p (style {:color styles/solar-green})
+     [:p.r-fit-text (style {:color styles/solar-green})
       carbon-avoided "kg of CO₂ avoided"]
 
      [:p "The equivalent of..."]
@@ -225,13 +267,14 @@
     [:li "With prices now at "
      [:span (style {:color styles/import-red})
       stats/assumed-future-import-price
-      "/kWh"]
+      "p/kWh"]
      " this would be "
      [:span (style {:color styles/solar-green})
       "£" (js/Math.round
            (* (/ stats/assumed-future-import-price 100)
               (- (stats/total :consumed)
                  (stats/total :from-grid))))]]]
+   [:p "&nbsp;"]
    [:h4 (style {:color styles/export-purple}) "Export"]
    [:ul
     [:li "Export rate varies per hour; averaged "
