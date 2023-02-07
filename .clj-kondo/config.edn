@@ -1,0 +1,1 @@
+{:lint-as {reveal.macros/defdata clojure.core/def}}
