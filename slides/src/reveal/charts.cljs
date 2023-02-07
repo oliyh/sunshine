@@ -1,13 +1,6 @@
 (ns reveal.charts
-  (:require [reveal.stats :refer [stats-2022]]
-            [reveal.stats :as stats]))
-
-(def solar-green "rgb(50, 168, 82)")
-(def consumption-orange "rgb(230, 151, 34)")
-(def battery-blue "rgb(34, 155, 230)")
-(def export-purple "rgb(230, 34, 214)")
-(def import-red "rgb(230, 34, 34)")
-(def inefficiency-grey "rgb(150, 150, 150)")
+  (:require [reveal.stats :as stats :refer [stats-2022]]
+            [reveal.styles :as styles]))
 
 (set! (.. js/Chart -defaults -color) "white")
 (set! (.. js/Chart -defaults -font -size) 20)
@@ -49,9 +42,9 @@
                                   :data [stats/avg-uk-annual-consumption
                                          (apply + (map :consumed stats-2022)) ;;3785
                                          (apply + (map :to-inverter stats-2022))]
-                                  :backgroundColor [inefficiency-grey
-                                                    consumption-orange
-                                                    solar-green]}]}}))
+                                  :backgroundColor [styles/inefficiency-grey
+                                                    styles/consumption-orange
+                                                    styles/solar-green]}]}}))
 
 (defn- generation-chart []
   (draw-chart "generation-chart"
@@ -68,10 +61,10 @@
                                          (apply + (map #(+ (:battery-lost %)
                                                            (:inverter-lost %))
                                                        stats-2022))]
-                                  :backgroundColor [consumption-orange
-                                                    battery-blue
-                                                    export-purple
-                                                    inefficiency-grey]}]}}))
+                                  :backgroundColor [styles/consumption-orange
+                                                    styles/battery-blue
+                                                    styles/export-purple
+                                                    styles/inefficiency-grey]}]}}))
 
 (defn- consumption-chart []
   (draw-chart "consumption-chart"
@@ -83,9 +76,9 @@
                                   :data [(apply + (map :inverter-to-house stats-2022))
                                          (apply + (map :from-battery stats-2022))
                                          (apply + (map :from-grid stats-2022))]
-                                  :backgroundColor [solar-green
-                                                    battery-blue
-                                                    import-red]}]}}))
+                                  :backgroundColor [styles/solar-green
+                                                    styles/battery-blue
+                                                    styles/import-red]}]}}))
 
 (def consumption-scales
   {:x {:type "time"
@@ -106,18 +99,18 @@
                  :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Consumed directly"
                                     :data (take day-count (map :inverter-to-house stats-2022))
-                                    :backgroundColor consumption-orange}
+                                    :backgroundColor styles/consumption-orange}
                                    {:label "Battery"
                                     :data (take day-count (map :to-battery stats-2022))
-                                    :backgroundColor battery-blue}
+                                    :backgroundColor styles/battery-blue}
                                    {:label "Export"
                                     :data (take day-count (map :to-grid stats-2022))
-                                    :backgroundColor export-purple}
+                                    :backgroundColor styles/export-purple}
                                    {:label "Inefficiency"
                                     :data (take day-count (map #(+ (:inverter-lost %)
                                                                    (:battery-lost %))
                                                                stats-2022))
-                                    :backgroundColor inefficiency-grey}]}})))
+                                    :backgroundColor styles/inefficiency-grey}]}})))
 
 (defn- daily-consumption-chart []
   (let [day-count 365]
@@ -129,13 +122,13 @@
                  :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets [{:label "Solar"
                                     :data (take day-count (map :inverter-to-house stats-2022))
-                                    :backgroundColor solar-green}
+                                    :backgroundColor styles/solar-green}
                                    {:label "Battery"
                                     :data (take day-count (map :from-battery stats-2022))
-                                    :backgroundColor battery-blue}
+                                    :backgroundColor styles/battery-blue}
                                    {:label "Grid"
                                     :data (take day-count (map :from-grid stats-2022))
-                                    :backgroundColor import-red}]}})))
+                                    :backgroundColor styles/import-red}]}})))
 
 (defn- daily-money-chart []
   (let [day-count 365]
@@ -165,7 +158,7 @@
                                                (let [unit-price (/ (stats/unit-price :export stat) 100)]
                                                  (* unit-price (:to-grid stat))))
                                              stats-2022))
-                            :backgroundColor export-purple}
+                            :backgroundColor styles/export-purple}
                            {:label "Import"
                             :order 1
                             :data (take day-count
@@ -173,24 +166,7 @@
                                                (let [unit-price (/ (stats/unit-price :import stat) 100)]
                                                  (* -1 unit-price (:from-grid stat))))
                                              stats-2022))
-                            :backgroundColor import-red}
-
-                           #_{:label "Money saved"
-                            :order 1
-                            :data (take day-count
-                                        (map (fn [stat]
-                                               (let [unit-price (/ (stats/unit-price :import stat) 100)]
-                                                 (* unit-price (:from-grid stat))))
-                                             stats-2022))
-                            :backgroundColor export-purple}
-                           #_{:label "Without panels"
-                              :order 2
-                              :data (take day-count
-                                          (map (fn [stat]
-                                                 (let [import-price (/ (stats/unit-price :import stat) 100)]
-                                                   (* -1 import-price (:consumed stat))))
-                                               stats-2022))
-                              :backgroundColor consumption-orange}])}})))
+                            :backgroundColor styles/import-red}])}})))
 
 (defn monthly-bills-chart []
   (draw-chart "monthly-bills-chart"
@@ -215,14 +191,41 @@
                                              (- (* import-price (apply + (map :from-grid stats)))
                                                 (* export-price (apply + (map :to-grid stats))))))
                                          month-groups)
-                              :backgroundColor solar-green}
+                              :backgroundColor styles/solar-green}
                              {:label "Without solar"
                               :fill true
                               :data (map (fn [stats]
                                            (let [unit-price (/ (stats/unit-price :import (first stats)) 100)]
                                              (* unit-price (apply + (map :consumed stats)))))
                                          month-groups)
-                              :backgroundColor consumption-orange}]})}))
+                              :backgroundColor styles/consumption-orange}]})}))
+
+(defn payoff-chart []
+  (draw-chart "payoff-chart"
+              {:type "line"
+               :options {:plugins {:legend legend
+                                   :datalabels {:display false}}
+                         :scales {:x {:title {:text "Year"}}
+                                  :y {:title {:text "£"
+                                              :display true}}}}
+               :data
+               (let [grid-avoided (* stats/assumed-future-import-price
+                                     (- (stats/total :consumed)
+                                        (stats/total :from-grid)))
+                     export (stats/total-cost :export :to-grid)
+                     annual-value (/ (+ grid-avoided export) 100)
+                     years-to-show 20]
+                 {:labels (range years-to-show)
+                  :datasets [{:label "Payoff"
+                              :fill true
+                              :data (map (fn [year]
+                                           (- (* year annual-value 0.993)
+                                              9000
+                                              (if (<= 10 year)
+                                                3000
+                                                0)))
+                                         (range years-to-show))
+                              :backgroundColor styles/solar-green}]})}))
 
 (defn init []
   (headlines-chart)
@@ -231,4 +234,5 @@
   (daily-generation-chart)
   (daily-consumption-chart)
   (daily-money-chart)
-  (monthly-bills-chart))
+  (monthly-bills-chart)
+  (payoff-chart))

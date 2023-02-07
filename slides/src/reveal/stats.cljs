@@ -58,6 +58,8 @@
   {:import import-prices
    :export export-prices})
 
+(def assumed-future-import-price 35)
+
 (defn unit-price [price-kind {:keys [date]}]
   (let [month (subs date 5 7)]
     (get-in prices [price-kind month])))

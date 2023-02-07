@@ -1,5 +1,6 @@
 (ns reveal.slides
-  (:require [reveal.stats :as stats :refer [stats-2022]]))
+  (:require [reveal.stats :as stats :refer [stats-2022]]
+            [reveal.styles :as styles :refer [style]]))
 
 (def title-page
   [:section
@@ -97,7 +98,7 @@
 
 (def energy-section
   [:section {:data-autoslide 6000
-             :data-background-image "/img/section-divider.jpg"
+             :data-background-image "img/section-divider.jpg"
              :data-background-opacity "0.7"}
    [:h1.r-fit-text "Energy"]
    [:audio
@@ -120,9 +121,10 @@
 
 (def generation
   [:section
-   [:h2 (stats/total :to-inverter) " kWh generated"]
-   [:div.r-stretch {:style "display: flex; justify-content: center;"}
-    [:canvas#generation-chart]]
+   [:h2 "Annual generation"]
+   [:p "Total: " [:span (style {:color styles/solar-green}) (stats/total :to-inverter) " kWh"]
+    [:div.r-stretch {:style "display: flex; justify-content: center;"}
+     [:canvas#generation-chart]]]
    [:aside.notes
     [:li (stats/percent :inverter-to-house :to-inverter) " went straight into the plug sockets in our house"]
     [:li (stats/percent :to-battery :to-inverter) " went into the battery for later consumption"]
@@ -146,13 +148,14 @@
 
 (def consumption
   [:section
-   [:h2 (stats/total :consumed) " kWh consumed"]
+   [:h2 "Annual consumption"]
+   [:p "Total: " [:span (style {:color styles/consumption-orange}) (stats/total :consumed) " kWh"]]
    [:div.r-stretch {:style "display: flex; justify-content: center;"}
     [:canvas#consumption-chart]]
    [:aside.notes
     [:ul
-     [:li (stats/percent :inverter-to-house :consumed)" of all our electricity came directly from the sun"]
-     [:li (stats/percent :from-battery :consumed)" came from the batteries"]
+     [:li (stats/percent :inverter-to-house :consumed) " of all our electricity came directly from the sun"]
+     [:li (stats/percent :from-battery :consumed) " came from the batteries"]
      [:li "Only " (stats/percent :from-grid :consumed) " came from the grid"]]]])
 
 (def daily-consumption
@@ -167,7 +170,7 @@
 
 (def impact-section
   [:section {:data-autoslide 6000
-             :data-background-image "/img/section-divider.jpg"
+             :data-background-image "img/section-divider.jpg"
              :data-background-opacity "0.7"}
    [:h1.r-fit-text "Impact"]
    [:audio
@@ -183,14 +186,18 @@
         carbon-avoided-tonne (/ carbon-avoided 1000)]
     [:section
      [:h2 "Environment"]
-     [:p {:style "color: lightgreen;"}
-      grid-avoided " kWh / " carbon-avoided " kg of CO₂ avoided*"]
+     [:p (style {:color styles/solar-green})
+      carbon-avoided "kg of CO₂ avoided"]
 
      [:p "The equivalent of..."]
      [:ul
-      [:li "Driving a petrol car " (* carbon-avoided-tonne 7500) "km"]
-      [:li "Flying from London to Cairo"]
-      [:li (js/Math.round (/ carbon-avoided 36)) "kg of beef"]]
+      [:li "Driving a petrol car "
+       [:span (style {:color styles/import-red}) (* carbon-avoided-tonne 7500) "km"]]
+      [:li "Flying from "
+       [:span (style {:color styles/import-red}) "London to Cairo"]]
+      [:li "Producing "
+       [:span (style {:color styles/import-red}) (js/Math.round (/ carbon-avoided 36)) "kg"]
+       " of beef"]]
 
      [:p
       [:small "* UK grid carbon intensity was " (* 1000 stats/uk-grid-carbon-intensity) "g CO₂/kWh in 2022"]]
@@ -202,34 +209,39 @@
 (def money-impact
   [:section
    [:h2 "Money"]
+   [:h4 (style {:color styles/import-red}) "Import"]
    [:ul
-    [:li "Import"
-     [:ul
-      [:li "Electricity prices averaged "
-       [:span {:style "color: orange"}
-        (js/Math.round (/ (stats/total-cost :import :from-grid)
-                          (stats/total :from-grid)))
-        "p/kWh"]]
-      (let [grid-avoided (- (stats/total-cost :import :consumed)
-                            (stats/total-cost :import :from-grid))]
-        [:li "We saved "
-         [:span {:style "color: lightgreen;"}
-          "£" (js/Math.round (/ grid-avoided 100))]
-         " from our grid consumption"])
-      [:li "With prices now at 35p/kWh this would be "
-       [:span {:style "color: lightgreen;"}
-        "£" (js/Math.round
-             (* (/ 35 100)
-                (- (stats/total :consumed)
-                   (stats/total :from-grid))))]]]]
-    [:li "Export"
-     [:ul
-      [:li "Export rate varies per hour; averaged " (js/Math.round (/ (stats/total-cost :export :to-grid)
-                                                                      (stats/total :to-grid)))
-       "p/kWh"]
-      [:li "We were paid "
-       [:span {:style "color: lightgreen;"}
-        "£" (js/Math.round (/ (stats/total-cost :export :to-grid) 100))] " for export"]]]]])
+    [:li "Electricity prices averaged "
+     [:span (style {:color styles/import-red})
+      (js/Math.round (/ (stats/total-cost :import :from-grid)
+                        (stats/total :from-grid)))
+      "p/kWh"]]
+    (let [grid-avoided (- (stats/total-cost :import :consumed)
+                          (stats/total-cost :import :from-grid))]
+      [:li "We saved "
+       [:span (style {:color styles/solar-green})
+        "£" (js/Math.round (/ grid-avoided 100))]
+       " from our grid consumption"])
+    [:li "With prices now at "
+     [:span (style {:color styles/import-red})
+      stats/assumed-future-import-price
+      "/kWh"]
+     " this would be "
+     [:span (style {:color styles/solar-green})
+      "£" (js/Math.round
+           (* (/ stats/assumed-future-import-price 100)
+              (- (stats/total :consumed)
+                 (stats/total :from-grid))))]]]
+   [:h4 (style {:color styles/export-purple}) "Export"]
+   [:ul
+    [:li "Export rate varies per hour; averaged "
+     [:span (style {:color styles/export-purple})
+      (js/Math.round (/ (stats/total-cost :export :to-grid)
+                        (stats/total :to-grid)))
+      "p/kWh"]]
+    [:li "We were paid "
+     [:span (style {:color styles/export-purple})
+      "£" (js/Math.round (/ (stats/total-cost :export :to-grid) 100))] " for export"]]])
 
 (def daily-money
   [:section
@@ -243,20 +255,27 @@
    [:div.r-stretch
     [:canvas#monthly-bills-chart]]])
 
-(def payback
+(def payoff
   [:section
-   [:h2 "Payback"]
-   (let [grid-avoided (- (stats/total-cost :import :consumed)
-                         (stats/total-cost :import :from-grid))
+   [:h2 "Payoff"]
+   (let [grid-avoided (* stats/assumed-future-import-price
+                         (- (stats/total :consumed)
+                            (stats/total :from-grid)))
          export (stats/total-cost :export :to-grid)
          total-value (/ (+ grid-avoided export) 100)]
-     [:ul
-      [:li "The installation generated £" (js/Math.round total-value) " of value"]
-      [:li "The installation cost was £" stats/installation-cost]]
-     ;; todo draw a graph of the payoff, using FV = PV(1 + r)^n to future value solar generation
-     ;; remember to use the higher import cost
-     ;; and maybe add £3k or something after 10 years to show the new inverter?
-     )])
+     [:p "Investment: "
+      [:span (style {:color styles/import-red})
+       "£" stats/installation-cost]
+      ", annual return: "
+      [:span (style {:color styles/solar-green})
+       "£" (js/Math.round total-value)]])
+   [:div.r-stretch
+    [:canvas#payoff-chart]]
+   [:aside.notes
+    [:ul
+     [:li "Assuming inflation and energy price growth are equal"]
+     [:li "Assuming the inverter needs replacing for £3k after 10 years"]
+     [:li "Assuming 0.7% annual performance drop off"]]]])
 
 (def behavioural-impact
   [:section
@@ -276,13 +295,14 @@
 
 ;; todo
 ;; styling - use stylesheet / classes to pick out key numbers on slides
-;; use the same colours as the charts
+;; font, especially for headlines
+;; speaker notes everywhere
 
 ;; efficiency - between 70-80% overall?
 
 ;; todo
 ;; value that the batteries saved us, vs their cost
-;; payoff of investment
+;; photos everywhere
 
 (def skeleton
   [:section
@@ -316,5 +336,5 @@
    money-impact
    daily-money
    monthly-bills
-   payback
+   payoff
    behavioural-impact])
