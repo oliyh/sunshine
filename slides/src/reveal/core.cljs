@@ -35,15 +35,11 @@
         (.then #(when state (.setState js/Reveal state)))
         (.then #(if (.isSpeakerNotes js/Reveal)
                   ;; disable figwheel connection for speaker notes
-                  (set! (.-connect js/figwheel.repl) (constantly "Disabled for speaker notes"))
+                  (when (.hasOwnProperty js/window "figwheel")
+                    (set! (.-connect js/figwheel.repl) (constantly "Disabled for speaker notes")))
 
-                  ;; push updated speaker notes into the speaker notes window, if open
-                  (when-let [window (js/window.open "", "reveal.js - Notes")]
-                    (.postMessage window (js/JSON.stringify (clj->js {:namespace "reveal-notes"
-                                                                      :type "state"
-                                                                      :state (.getState js/Reveal)
-                                                                      :notes (.getSlideNotes js/Reveal)}))
-                                  "*"))))
+                  ;; trigger an event which will update the speaker notes
+                  (.dispatchEvent js/Reveal (clj->js {:type "resumed"}))))
         (.then (fn [] (charts/init))))))
 
 (main)
