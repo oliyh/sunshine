@@ -144,29 +144,22 @@
                                                 :display true}}}}
                  :data {:labels (take day-count (map #(js/Date. (:date %)) stats-2022))
                         :datasets
-                        (let [pnl (take day-count
-                                        (map (fn [stat]
-                                               (let [import-price (/ (stats/unit-price :import stat) 100)
-                                                     export-price (/ (stats/unit-price :import stat) 100)]
-                                                 (- (* export-price (:to-grid stat))
-                                                    (* import-price (:from-grid stat)))))
-                                             stats-2022))]
-                          [{:label "Export"
-                            :order 1
-                            :data (take day-count
-                                        (map (fn [stat]
-                                               (let [unit-price (/ (stats/unit-price :export stat) 100)]
-                                                 (* unit-price (:to-grid stat))))
-                                             stats-2022))
-                            :backgroundColor styles/export-purple}
-                           {:label "Import"
-                            :order 1
-                            :data (take day-count
-                                        (map (fn [stat]
-                                               (let [unit-price (/ (stats/unit-price :import stat) 100)]
-                                                 (* -1 unit-price (:from-grid stat))))
-                                             stats-2022))
-                            :backgroundColor styles/import-red}])}})))
+                        [{:label "Export"
+                          :order 1
+                          :data (take day-count
+                                      (map (fn [stat]
+                                             (let [unit-price (/ (stats/unit-price :export stat) 100)]
+                                               (* unit-price (:to-grid stat))))
+                                           stats-2022))
+                          :backgroundColor styles/export-purple}
+                         {:label "Import"
+                          :order 1
+                          :data (take day-count
+                                      (map (fn [stat]
+                                             (let [unit-price (/ (stats/unit-price :import stat) 100)]
+                                               (* -1 unit-price (:from-grid stat))))
+                                           stats-2022))
+                          :backgroundColor styles/import-red}]}})))
 
 (defn monthly-bills-chart []
   (draw-chart "monthly-bills-chart"
