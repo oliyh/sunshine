@@ -31,6 +31,7 @@
   [:section
    [:h2 "Why?"]
    [:img.r-stretch.frame {:src "img/david-attenborough.jpg"}]
+   [:p "A Perfect Planet - Humans (BBC, 2021)"]
    [:aside.notes
     [:ul
      [:li "David Attenborough has been observing the natural world since 1952"]
