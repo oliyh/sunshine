@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400&display=swap');
+
 audio {
     opacity: 0.5;
 }
@@ -6,6 +8,7 @@ audio {
     --r-main-color: white;
     --r-heading-color: white;
     --r-background-color: #333;
+    --r-heading-font: 'Oswald', sans-serif;
 }
 
 .frame {

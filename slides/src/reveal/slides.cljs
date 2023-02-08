@@ -34,9 +34,8 @@
 
 (def motivation-2
   [:section
-   [:h2 "Why?"]
-   [:img.r-stretch.frame {:src "img/global-surface-area.jpg"}]
-   [:div [:small "Credit: Tim Urban"]]
+   {:data-background-image "img/global-surface-area.jpg"}
+   [:p [:small (style {:color "black"}) "Credit: Tim Urban"]]
    [:aside.notes
     [:ul
      [:li "The sun provides 1kW of power to every 1m² on earth"]
@@ -125,17 +124,21 @@
 (def installation
   [:section
    [:h2 "Installation"]
-   [:ul
-    [:li "One day"]
-    [:li "Two on the roof and one electrician"]
-    [:li "Scaffolding"]
-    [:li "Mounting points slide under roof tiles and fix to rafters"]
-    [:li "Inverter and batteries in the attic"]
-    [:li "Export meter and cutout switches added to distribution board"]]
-   ;; todo photos
+   [:div (style {:display "flex"
+                 :justify-content "space-evenly"
+                 :gap "20px"})
+    [:div "📅 1 day"]
+    [:div "🧗 3 people"]
+    [:div "🚧 Scaffolding"]]
+   [:div.r-stretch
+    [:img.frame {:src "img/installation.jpg"}]]
+
    [:aside.notes
     [:ul
      [:li "Installation was quick and clean"]
+     [:li "Mounting points slide under roof tiles and fix to rafters"]
+     [:li "Rails attach to the mounting points and the panels are fixed to the rails"]
+     [:li "Export meter and cutout switches added to distribution board"]
      [:li "Pigeon proofing was added later and took one person a few hours"]]]])
 
 (def energy-section
@@ -228,8 +231,8 @@
         carbon-avoided-tonne (/ carbon-avoided 1000)]
     [:section
      [:h2 "Environment"]
-     [:p.r-fit-text (style {:color styles/solar-green})
-      carbon-avoided "kg of CO₂ avoided"]
+     [:h3.r-fit-text (style {:color styles/solar-green})
+      carbon-avoided "kg CO₂ avoided"]
 
      [:p "The equivalent of..."]
      [:ul
@@ -245,46 +248,56 @@
       [:small "* UK grid carbon intensity was " (* 1000 stats/uk-grid-carbon-intensity) "g CO₂/kWh in 2022"]]
      [:aside.notes
       [:ul
-       [:li "What this puts into context for me is how energy intensive flying and beef are"]
+       [:li "What this puts into context for me is how carbon intensive flying and beef are"]
        [:li "2022 was the UK's second lowest carbon intensity score"]]]]))
 
 (def money-impact
   [:section
    [:h2 "Money"]
-   [:h4 (style {:color styles/import-red}) "Import"]
-   [:ul
-    [:li "Electricity prices averaged "
-     [:span (style {:color styles/import-red})
+
+   [:div (style {:display "flex"
+                 :justify-content "space-evenly"
+                 :flex-wrap "wrap"
+                 :gap "1em"})
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/import-red})
       (js/Math.round (/ (stats/total-cost :import :from-grid)
                         (stats/total :from-grid)))
-      "p/kWh"]]
-    (let [grid-avoided (- (stats/total-cost :import :consumed)
-                          (stats/total-cost :import :from-grid))]
-      [:li "We saved "
-       [:span (style {:color styles/solar-green})
-        "£" (js/Math.round (/ grid-avoided 100))]
-       " from our grid consumption"])
-    [:li "With prices now at "
-     [:span (style {:color styles/import-red})
-      stats/assumed-future-import-price
       "p/kWh"]
-     " this would be "
-     [:span (style {:color styles/solar-green})
-      "£" (js/Math.round
-           (* (/ stats/assumed-future-import-price 100)
-              (- (stats/total :consumed)
-                 (stats/total :from-grid))))]]]
-   [:p "&nbsp;"]
-   [:h4 (style {:color styles/export-purple}) "Export"]
-   [:ul
-    [:li "Export rate varies per hour; averaged "
-     [:span (style {:color styles/export-purple})
+     "Average import price"]
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/solar-green})
+      "£"
+      (let [grid-avoided (- (stats/total-cost :import :consumed)
+                            (stats/total-cost :import :from-grid))]
+        (js/Math.round (/ grid-avoided 100)))]
+     "Saved from import"]
+
+    [:div (style {:flex-basis "100%"
+                  :font-style "italic"})
+     [:div (style {:font-size "2em"
+                   :color styles/solar-green})
+      "£"
+      (js/Math.round
+       (* (/ stats/assumed-future-import-price 100)
+          (- (stats/total :consumed)
+             (stats/total :from-grid))))]
+     "Projected saving next year"]
+
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/export-purple})
       (js/Math.round (/ (stats/total-cost :export :to-grid)
                         (stats/total :to-grid)))
-      "p/kWh"]]
-    [:li "We were paid "
-     [:span (style {:color styles/export-purple})
-      "£" (js/Math.round (/ (stats/total-cost :export :to-grid) 100))] " for export"]]])
+      "p/kWh"]
+     "Average export price"]
+    [:div
+     [:div (style {:font-size "2em"
+                   :color styles/export-purple})
+      "£" (js/Math.round (/ (stats/total-cost :export :to-grid) 100))]
+     "Export earned"]]])
 
 (def daily-money
   [:section
@@ -324,21 +337,8 @@
   [:section
    [:h2 "Behaviour"]])
 
-#_[:ul
-   [:li "On the best days in summer we generate over 30kWh - powering us and two other homes"]
-   [:li "We had X days without using the grid at all - sunny all day and battery all night"]
-   [:li "On the darkest days we only generate about 0.5kWh, enough to boil the kettle a few times"]]
-
-#_[:ul
- [:li "5144kWh generated"]
- [:li "3785kWh consumed domestically"]
- [:li "1792kWh exported to the grid"]
- [:li "1490kWh imported when it wasn't sunny enough"]
- [:li "1446kWh import saved by battery"]]
-
 ;; todo
 ;; styling - use stylesheet / classes to pick out key numbers on slides
-;; font, especially for headlines
 ;; speaker notes everywhere
 
 ;; efficiency - between 70-80% overall?
