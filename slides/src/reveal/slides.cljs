@@ -415,24 +415,30 @@
 (def stats
   [:section
    [:h2 "Stats"]
-   [:img.frame {:src "img/luxpower-stats.png"}]
+   [:img.frame {:src "img/realtime-stats.jpg"}]
    [:aside.notes
     [:ul
      [:li "I have become slightly obsessed with stats"]
-     [:li "I've been known to say 'quick, turn the dishwasher on'"]
+     [:li "I've been known to say 'quick, turn the dishwasher on'"]]]])
+
+(def stats-2
+  [:section
+   [:h2 "Stats"]
+   [:img.frame {:src "img/luxpower-stats.png"}]
+   [:aside.notes
+    [:ul
      [:li "These stats are collected and provided by the manufacturer of the inverter"]
      [:li "Our inverter has an API so hacking your own automation is possible"]]]])
 
+
+
 (def kaneda
   [:section
-   ;;{:data-background-image "img/kaneda.jpg"}
    [:h2 "What do you see?"]
    [:img.frame {:src "img/kaneda.jpg"}]
    [:aside.notes
     [:ul
      [:li "Any questions?"]]]])
-
-;; todo screenshot of luxpower during the day
 
 (def skeleton
   [:section
@@ -443,8 +449,7 @@
     [:ul
      [:li]]]])
 
-(defn all
-  []
+(defn all []
   [title-page
    intro
    motivation-1
@@ -470,5 +475,6 @@
    ;;batteries
    behavioural-impact
    stats
+   stats-2
 
    kaneda])
