@@ -95,6 +95,35 @@
      [:li "The inverter converts your solar power to domestic voltage and frequency"]
      [:li "Batteries increase your utilisation of your solar power by storing for later what you don't need now"]]]])
 
+(def weights-and-measures
+  [:section
+   [:h2 "Weights and measures"]
+   [:div (style {:display "flex"
+                 :justify-content "space-evenly"
+                 :flex-wrap "wrap"
+                 :gap "1em"})
+    [:div
+     [:div (style {:font-size "2em"})
+      "Kilowatt (kW)"]
+     "Measure of power (1000 Joules per second)"]
+    [:div
+     [:div (style {:font-size "2em"})
+      "Kilowatt Hour (kWh)"]
+     "Measure of energy (3.6×10⁶ Joules)"]
+    [:div
+     [:div (style {:font-size "2em"})
+      "5W"]
+     "Power of an LED lightbulb"]
+    [:div
+     [:div (style {:font-size "2em"})
+      "3kW"]
+     "Power of a kettle"]]
+   [:aside.notes
+    [:ul
+     [:li "A kilowatt hour, also called a unit of energy for convenience, currently costs 38p"]
+     [:li "A lightbulb uses 5W so over 8 hours will use 40Wh, or 0.04kWh - about 1.5p"]
+     [:li "Boiling a kettle uses 3kW for a minute, which is 0.05kWh - same as the lightbulb"]]]])
+
 (def sizing
   [:section
    [:h2 "Decisions"]
@@ -456,6 +485,7 @@
    motivation-2
    planning
    equipment
+   weights-and-measures
    sizing
    installation
 
