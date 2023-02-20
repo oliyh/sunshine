@@ -127,7 +127,7 @@
      [:li "A kilowatt hour, also called a unit of energy for convenience, is using one kilowatt for one hour. It currently costs 38p"]
      [:li "A lightbulb uses 5W so over 8 hours will use 40Wh, or 0.04kWh - about 1.5p"]
      [:li "Boiling a kettle uses 3kW for a minute, which is 0.05kWh - same as the lightbulb"]
-     [:li "Among the more high power appliances, a washing machine may use about 2kWh for a cycle"]]])
+     [:li "Among the more high power appliances, a washing machine may use about 2kWh for a cycle"]]]])
 
 (def sizing
   [:section
