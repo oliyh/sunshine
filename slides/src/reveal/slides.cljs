@@ -103,26 +103,31 @@
                  :flex-wrap "wrap"
                  :gap "1em"})
     [:div
-     [:div (style {:font-size "2em"})
+     [:div (style {:font-size "2em"
+                   :color styles/consumption-orange})
       "Kilowatt (kW)"]
      "Measure of power (1000 Joules per second)"]
     [:div
-     [:div (style {:font-size "2em"})
-      "Kilowatt Hour (kWh)"]
+     [:div (style {:font-size "2em"
+                   :color styles/consumption-orange})
+      "Kilowatt hour (kWh)"]
      "Measure of energy (3.6×10⁶ Joules)"]
     [:div
-     [:div (style {:font-size "2em"})
+     [:div (style {:font-size "2em"
+                   :color styles/solar-green})
       "5W"]
      "Power of an LED lightbulb"]
     [:div
-     [:div (style {:font-size "2em"})
+     [:div (style {:font-size "2em"
+                   :color styles/import-red})
       "3kW"]
      "Power of a kettle"]]
    [:aside.notes
     [:ul
-     [:li "A kilowatt hour, also called a unit of energy for convenience, currently costs 38p"]
+     [:li "A kilowatt hour, also called a unit of energy for convenience, is using one kilowatt for one hour. It currently costs 38p"]
      [:li "A lightbulb uses 5W so over 8 hours will use 40Wh, or 0.04kWh - about 1.5p"]
-     [:li "Boiling a kettle uses 3kW for a minute, which is 0.05kWh - same as the lightbulb"]]]])
+     [:li "Boiling a kettle uses 3kW for a minute, which is 0.05kWh - same as the lightbulb"]
+     [:li "Among the more high power appliances, a washing machine may use about 2kWh for a cycle"]]])
 
 (def sizing
   [:section
